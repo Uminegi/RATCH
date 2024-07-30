@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Website</title>
+    <link rel="stylesheet" href="index.css">
+    <script src="index.js"></script>
+</head>
+
+<body>
+    <center>
+        <h1>埼玉県郷土かるた読み上げアプリ</h1>
+        <br></br>
+    </center>
+    <div class="mem">
+        <center id="mem">記憶時間
+            <input type="number" value=3 id="mem_time">
+            分
+            <br></br>
+        </center>
+    </div>
+    <center id="memorizing">
+        現在記憶時間です
+        <br>
+        記憶時間が終了するか、「すぐに始める」ボタンを押すと始まります
+        <br>
+        <br>
+        <input type="button" value="すぐに始める" id="now_st_btton" onclick="start()">
+    </center>
+    <center>
+        <input type="button" value="始める" id="st-button" onclick="memo()">
+        <img src="image/red_flag.png" alt="停止中" id="flag">
+        <input type="button" value="止める" id="stop_bt" onclick="stop()">
+    </center>
+    <center id="last">
+        <br></br>
+        最後の二枚になりました
+        <br></br>
+        続けるボタンを押すと進みます
+        <br>
+        <input type="button" value="続ける" id="last_bt" onclick="last_2_cards()">
+    </center>
+    <center id="finish">
+        読み上げが終了しました
+        <br>
+        もう一度読む場合は「初めへ戻る」ボタンを押すかページをリロードしてください
+        <br>
+        <input type="button" value="初めへ戻る" id="to_first" onclick="to_first()">
+    </center>
+    <div id="explanation">
+        <br><br>
+
+        埼玉県郷土かるたの自動読み上げアプリです。
+        <br>
+        記憶時間を設定して、「始める」ボタンを押すと記憶時間が始まります。
+        <br>
+        「させん」、「いうを」のやく札は最後の方には読まれません。
+        <br>
+        また、「ま」札は最初の1枚で読まれません。
+    </div>
+</body>
+
+</html>
