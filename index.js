@@ -63,19 +63,36 @@ window.onload = function () {
 }
 
 //役札やま札の確認
-function check(nums, yaku, ma) {
-    for (let i = yaku; i < nums.length; i++) {
+function check(nums, yaku_l, yaku_s, ren) {
+    for (let i = nums.length - yaku_l - 1; i < nums.length; i++) {
         var num = nums[i];
         if (num == 1 || num == 2 || num == 10 || num == 13 || num == 44 || num == 45 || num == 30) {
             console.log("役札が最後の方に含まれています");
             return true;
         }
     }
-    for (let i = ma; i >= 0; i--) {
+    for (let i = yaku_s; i >= 0; i--) {
         var num = nums[i];
-        if (num == 30) {
-            console.log("ま札が最初の方に含まれています");
+        if (num == 1 || num == 2 || num == 10 || num == 13 || num == 44 || num == 45 || num == 30) {
+            console.log("やく札が最初の方に含まれています");
             return true;
+        }
+    }
+
+    if (ren) {
+        yaku = false;//やく札が連続しているか確認
+        for (let i = 0; i < nums.length; i++) {
+            var num = nums[i];
+            if (num == 1 || num == 2 || num == 10 || num == 13 || num == 44 || num == 45 || num == 30) {
+                if (yaku) {
+                    console.log("やく札が連続しています");
+                    return true;
+                } else {
+                    yaku = true;
+                }
+            } else {
+                yaku = false;
+            }
         }
     }
     return false;
@@ -209,7 +226,7 @@ function memo() {
         var numbers = Array.from({ length: 46 }, (_, i) => i);
         var shuffledNumbers = numbers.sort(() => Math.random() - 0.5);
         uniqueNumbers = shuffledNumbers.slice(0, 46);
-    } while (check(uniqueNumbers, 40, 1));//最後の5枚に役札、ま札が読まれない,最初の2枚にま札が読まれない
+    } while (check(uniqueNumbers, 5, 3, true));//最後の5枚に役札、ま札が読まれない,最初の2枚にま札が読まれない
     console.log(uniqueNumbers);
 
 
