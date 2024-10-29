@@ -7,7 +7,8 @@ mem {
 }
 
 #mem_time {
-    width: 32px;
+    width: 48px;
+    height: 20px;
 }
 
 #stop_bt {
@@ -47,5 +48,7 @@ mem {
 #stop_bt,
 #last_bt,
 #to_first {
-    font-size: 40px;
+    height: 60pt;
+    font-size: 30pt;
+    width: auto;
 }
