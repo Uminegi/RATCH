@@ -41,3 +41,11 @@ mem {
 #title {
     font-size: 30px;
 }
+
+#now_st_btton,
+#st-button,
+#stop_bt,
+#last_bt,
+#to_first {
+    font-size: 40px;
+}
