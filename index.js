@@ -178,7 +178,7 @@ function read() {
             read_next = false;
         } else {
 
-            if (read_time + voice_time + 1500 <= get_time()) {//次の札が読める状態だったら
+            if (read_time + voice_time + 1700 <= get_time()) {//次の札が読める状態だったら
                 if (can_read) {
                     read_next = true;
                 } else {
