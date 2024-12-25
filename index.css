@@ -43,6 +43,10 @@ mem {
     font-size: 30px;
 }
 
+#test_bt {
+    display: none;
+}
+
 #now_st_btton,
 #st-button,
 #stop_bt,

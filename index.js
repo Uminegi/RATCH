@@ -32,7 +32,16 @@ let now = new Date();//時間処理を使用するための宣言
 var last_read = false;
 var interval_id;//インターバルのID
 var explanation;
-const v_name = ["r_n"];//読み上げる人
+let test_b;//テスト用ボタン
+let maintenance;
+let maintenance_time = true;//メンテナンス中はtureにする
+let reader = 0;
+let sounds = Array.from({ length: 47 }, (_, i) => i);
+let sounds_time = Array.from({ length: 47 }, (_, i) => i);
+let ma_sound;
+const v_name = [
+    "r_n"
+];//読み上げる人
 const file_names = [//役札1,2,10,13,44,45　ま札:30　"つづけます":46
     "あ.mp3", "い.mp3", "う.mp3", "え.mp3", "お.mp3",
     "か.mp3", "き.mp3", "く.mp3", "け.mp3", "こ.mp3",
@@ -59,7 +68,9 @@ window.onload = function () {
     last_bt = document.getElementById("last_bt");//最後の2枚のときに表示されるボタン
     flag = document.getElementById("flag");//赤い旗の画像
     fin_bl = document.getElementById("finish");//終わった後に表示されるブロック
-
+    test_b = document.getElementById("test_bt");//テスト用ボタン
+    maintenance = document.getElementById("testTime");//メンテナンス時のやつ
+    console.log(sounds);
 }
 
 //役札やま札の確認
@@ -108,14 +119,17 @@ function read() {
     if (now_st) {
         if (first_shot) {//最初の1回だけ
             memorize.style.display = "none";
-            karuta_v = new Audio("./sound/" + v_name[0] + "/" + file_names[30]);//はじめはま札を読む
-            karuta_v.play();//流す処理
+            if (maintenance_time) {
+                //test_b.style.display = "block";
+            }
+            //karuta_v = new Audio("./sound/" + v_name[0] + "/" + file_names[30]);//はじめはま札を読む
+            ma_sound.play();//流す処理
             read_time = get_time();//一時的に現在の時間を入れる
-            voice_time = 100000;//初期値として100秒を入れる
-            karuta_v.addEventListener('loadedmetadata', function () {
+            voice_time = sounds_time[30];//初期値として100秒を入れる
+            /*karuta_v.addEventListener('loadedmetadata', function () {
                 voice_time = Math.trunc(karuta_v.duration * 1000);
                 read_time = get_time();//読んだ瞬間の時間を取得
-            });
+            });*/
             read_num = 0;//初期値は0、テストのときは値を変えるので戻すのを忘れないように
             next = uniqueNumbers[read_num];
             flag.style.display = "block";
@@ -138,16 +152,17 @@ function read() {
                         fin();//終了時の処理
                         return;
                     }
-                    karuta_v = new Audio("./sound/" + v_name[0] + "/" + file_names[next]);
-                    karuta_v.play();//流す処理
+                    //karuta_v = new Audio("./sound/" + v_name[0] + "/" + file_names[next]);
+                    sounds[next].play();//流す処理
                     read_time = get_time();//一時的に現在の時間を入れる
-                    voice_time = 100000;//初期値として100秒を入れる
-                    karuta_v.addEventListener('loadedmetadata', function () {
+                    voice_time = sounds_time[next];//初期値として100秒を入れる
+                    /*karuta_v.addEventListener('loadedmetadata', function () {
                         voice_time = Math.trunc(karuta_v.duration * 1000);
                         read_time = get_time();//読んだ瞬間の時間を取得
                         next = uniqueNumbers[read_num];
                         read_num = read_num + 1;
-                    });
+                    });*/
+
 
 
                 }
@@ -158,14 +173,14 @@ function read() {
                     read_num = read_num - 1;
                     next_flag = false;
                 }
-                karuta_v = new Audio("./sound/" + v_name[0] + "/" + file_names[next]);
-                karuta_v.play();
-                read_time = get_time();
-                voice_time = 100000;//初期値として100秒を入れる
-                karuta_v.addEventListener('loadedmetadata', function () {//コールバック関数
+                //karuta_v = new Audio("./sound/" + v_name[0] + "/" + file_names[next]);
+                sounds[next].play();//流す処理
+                read_time = get_time();//一時的に現在の時間を入れる
+                voice_time = sounds_time[next];//初期値として100秒を入れる
+                /*karuta_v.addEventListener('loadedmetadata', function () {//コールバック関数
                     voice_time = Math.trunc(karuta_v.duration * 1000);
                     read_time = get_time();//読んだ瞬間の時間を取得
-                });
+                });*/
                 read_num = read_num + 1;
                 next = uniqueNumbers[read_num]
                 if (read_num == 44) {
@@ -202,7 +217,7 @@ function fin() {
 }
 
 //初期化の処理
-function init_karuta() {
+function init_karuta(reader_num) {
     //変数の初期化とか
     read_next = false;
     now_st = false
@@ -210,6 +225,31 @@ function init_karuta() {
     last_2_shot = true;
     last_flag = false;//最後の二枚のフラグ
     last_read = false;//最後の二枚を読んでも良いかのフラグ
+    ma_sound = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[30])
+    ma_sound.play().then(() => {
+        ma_sound.pause();
+        ma_sound.currentTime = 0;
+    });
+    ma_sound.addEventListener("loadedmetadata", function () {
+        sounds_time[30] = Math.trunc(ma_sound.duration * 1000);
+    })
+    for (let i = 0; i < sounds.length; i++) {
+        sounds[i] = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[i])
+        sounds[i].play().then(() => {
+            sounds[i].pause();
+            sounds[i].currentTime = 0;
+            console.log(i);
+        }).catch(function () {
+            console.log("fail!!")
+        });
+        if (i == 30) {
+            continue;
+        }
+        sounds[i].addEventListener('loadedmetadata', function () {
+            sounds_time[i] = Math.trunc(sounds[i].duration * 1000);
+
+        });
+    }
     mem_st = get_time();//記憶開始のタイミングの時間
 }
 //始めるボタンを押したときの処理
@@ -221,7 +261,7 @@ function memo() {
     memorize.style.display = "block";
     explanation.style.display = "none";
 
-    init_karuta();
+    init_karuta(reader);
     do {//
         var numbers = Array.from({ length: 46 }, (_, i) => i);
         var shuffledNumbers = numbers.sort(() => Math.random() - 0.5);
@@ -266,4 +306,8 @@ function to_first() {//初めの状態に戻る
     mem.style.display = "block";
     st_b.style.display = "block";
     explanation.style.display = "block";
+}
+
+function test() {
+    console.log("test");
 }
