@@ -43,6 +43,10 @@ mem {
     font-size: 30px;
 }
 
+#loading {
+    display: none;
+}
+
 #test_bt {
     display: none;
 }

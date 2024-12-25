@@ -13,6 +13,7 @@ let last_flag;
 let flag;//旗の画像
 let mem_time_en;//記憶時間のエントリー
 let to_first_bt;//最初に戻るボタン
+let loading;//ロード中の表示
 var can_read = true;//読み上げを停止する
 var read_next = true;
 var now_time;//現在の時間←多分使わない?
@@ -39,6 +40,10 @@ let reader = 0;
 let sounds = Array.from({ length: 47 }, (_, i) => i);
 let sounds_time = Array.from({ length: 47 }, (_, i) => i);
 let ma_sound;
+let canStart = 0;//全部のロードが終わったら始めることができるようにする
+//canStart == sounds.length + 1で始まる
+let canStartFirst = true;
+
 const v_name = [
     "r_n"
 ];//読み上げる人
@@ -70,6 +75,7 @@ window.onload = function () {
     fin_bl = document.getElementById("finish");//終わった後に表示されるブロック
     test_b = document.getElementById("test_bt");//テスト用ボタン
     maintenance = document.getElementById("testTime");//メンテナンス時のやつ
+    loading = document.getElementById("loading")
     console.log(sounds);
 }
 
@@ -116,7 +122,12 @@ function get_time() {
 }
 //実際に動く部分
 function read() {
-    if (now_st) {
+    if (canStart == sounds.length + 1 && canStartFirst) {
+        loading.style.display = "none";
+        memorize.style.display = "block";
+        canStartFirst = false;
+    }
+    if (now_st && !(canStartFirst)) {
         if (first_shot) {//最初の1回だけ
             memorize.style.display = "none";
             if (maintenance_time) {
@@ -168,7 +179,7 @@ function read() {
                 }
 
             } else {
-                if (next_flag) {//つづけますのフラグがなかったら
+                if (next_flag) {//つづけますのとき
                     next = 46;
                     read_num = read_num - 1;
                     next_flag = false;
@@ -229,6 +240,7 @@ function init_karuta(reader_num) {
     ma_sound.play().then(() => {
         ma_sound.pause();
         ma_sound.currentTime = 0;
+        canStart++;
     });
     ma_sound.addEventListener("loadedmetadata", function () {
         sounds_time[30] = Math.trunc(ma_sound.duration * 1000);
@@ -239,6 +251,7 @@ function init_karuta(reader_num) {
             sounds[i].pause();
             sounds[i].currentTime = 0;
             console.log(i);
+            canStart++;
         }).catch(function () {
             console.log("fail!!")
         });
@@ -258,7 +271,8 @@ function memo() {
     mem_time = mem_time_en.value * 1000 * 60;//記憶時間をミリ秒で取得
     mem.style.display = "none";
     st_b.style.display = "none";
-    memorize.style.display = "block";
+    loading.style.display = "block";
+    //memorize.style.display = "block";
     explanation.style.display = "none";
 
     init_karuta(reader);
