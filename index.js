@@ -39,6 +39,7 @@ let maintenance_time = true;//メンテナンス中はtureにする
 let reader = 0;
 let sounds = Array.from({ length: 47 }, (_, i) => i);
 let sounds_time = Array.from({ length: 47 }, (_, i) => i);
+let sounds_volume = Array.from({ length: 47 });
 let ma_sound;//初めのまがたま
 let canStart = 0;//全部のロードが終わったら始めることができるようにする
 //canStart == sounds.length + 1で始まる
@@ -78,7 +79,7 @@ window.onload = function () {
     maintenance = document.getElementById("testTime");//メンテナンス時のやつ
     loading = document.getElementById("loading")
     errorOut = document.getElementById("Test_error");
-    console.log(sounds);
+    console.log(sounds_volume);
 }
 
 //役札やま札の確認
@@ -127,6 +128,7 @@ function read() {
     if (canStart == sounds.length + 1 && canStartFirst) {
         for (let i = 0; i < sounds.length; i++) {
             sounds[i].currentTime = 0;
+            sounds[i].muted = false;
         }
         loading.style.display = "none";
         memorize.style.display = "block";
@@ -326,12 +328,15 @@ function loaded(num) {
 
 }
 function loadPlayPause(num, reader_num) {
-    sounds[num] = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[num]);
-    sounds[num].muted = true;
+    sounds[num] = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[num])
     sounds[num].play().then(() => {
-        canStart++;
+        sounds[num].muted = true;
+    }).then(() => {
         sounds[num].pause();
         console.log(num);
+        console.log(sounds[num]);
+        canStart++;
+    }).then(() => {
         sounds[num].muted = false;
     }).catch(function () {
         console.log("fail!!")
