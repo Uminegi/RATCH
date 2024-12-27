@@ -241,30 +241,17 @@ function init_karuta(reader_num) {
     last_read = false;//最後の二枚を読んでも良いかのフラグ
     ma_sound = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[30]);
     ma_sound.play().then(() => {
+        canStart++;
         ma_sound.pause();
         ma_sound.currentTime = 0;
-        canStart++;
+
     });
     ma_sound.addEventListener("loadedmetadata", function () {
         sounds_time[30] = Math.trunc(ma_sound.duration * 1000);
     });
 
     for (let i = 0; i < sounds.length; i++) {
-        sounds[i] = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[i]);
-        sounds[i].play().then(() => {
-            canStart++;
-            sounds[i].pause();
-            console.log(i);
-        }).catch(function () {
-            console.log("fail!!")
-        });
-
-        if (i == 30) {
-            continue;
-        }
-        sounds[i].addEventListener('loadedmetadata', function () {
-            sounds_time[i] = Math.trunc(sounds[i].duration * 1000);
-        });
+        loadPlayPause(i, reader_num);
     }
     mem_st = get_time();//記憶開始のタイミングの時間
 }
@@ -327,4 +314,24 @@ function to_first() {//初めの状態に戻る
 
 function test() {
     console.log("test");
+}
+
+function loaded(num) {
+
+}
+function loadPlayPause(num, reader_num) {
+    sounds[num] = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[num]);
+    sounds[num].play().then(() => {
+        canStart++;
+        sounds[num].pause();
+        console.log(num);
+    }).catch(function () {
+        console.log("fail!!")
+    });
+    if (num == 30) {
+        return;
+    }
+    sounds[num].addEventListener('loadedmetadata', function () {
+        sounds_time[num] = Math.trunc(sounds[num].duration * 1000);
+    });
 }
