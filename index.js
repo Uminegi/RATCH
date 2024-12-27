@@ -139,7 +139,9 @@ function read() {
                 //test_b.style.display = "block";
             }
             //karuta_v = new Audio("./sound/" + v_name[0] + "/" + file_names[30]);//はじめはま札を読む
-            ma_sound.play();//流す処理
+            ma_sound.play().then(() => {
+                read_time = get_time();
+            });//流す処理
             read_time = get_time();//一時的に現在の時間を入れる
             voice_time = sounds_time[30];//初期値として100秒を入れる
             /*karuta_v.addEventListener('loadedmetadata', function () {
@@ -264,11 +266,10 @@ function memo() {
     mem.style.display = "none";
     st_b.style.display = "none";
     loading.style.display = "block";
-    //memorize.style.display = "block";
     explanation.style.display = "none";
 
     init_karuta(reader);
-    do {//
+    do {
         var numbers = Array.from({ length: 46 }, (_, i) => i);
         var shuffledNumbers = numbers.sort(() => Math.random() - 0.5);
         uniqueNumbers = shuffledNumbers.slice(0, 46);
