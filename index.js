@@ -253,9 +253,10 @@ function init_karuta(reader_num) {
         sounds[i] = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[i])
         sounds[i].play().then(() => {
             sounds[i].pause();
+            canStart++;
             sounds[i].currentTime = 0;
             console.log(i);
-            canStart++;
+
         }).catch(function () {
             console.log("fail!!")
         });
