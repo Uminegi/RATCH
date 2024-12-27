@@ -171,7 +171,10 @@ function read() {
                         return;
                     }
                     //karuta_v = new Audio("./sound/" + v_name[0] + "/" + file_names[next]);
-                    sounds[next].play();//流す処理
+                    sounds[next].currentTime = 0;
+                    sounds[next].play().then(() => {
+                        read_time = get_time();
+                    });//流す処理
                     read_time = get_time();//一時的に現在の時間を入れる
                     voice_time = sounds_time[next];//初期値として100秒を入れる
                     /*karuta_v.addEventListener('loadedmetadata', function () {
@@ -324,10 +327,12 @@ function loaded(num) {
 }
 function loadPlayPause(num, reader_num) {
     sounds[num] = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[num]);
+    sounds[num].muted = true;
     sounds[num].play().then(() => {
         canStart++;
         sounds[num].pause();
         console.log(num);
+        sounds[num].muted = false;
     }).catch(function () {
         console.log("fail!!")
         errorOut.style.display = "block";
