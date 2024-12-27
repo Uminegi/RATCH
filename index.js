@@ -239,7 +239,7 @@ function init_karuta(reader_num) {
     last_2_shot = true;
     last_flag = false;//最後の二枚のフラグ
     last_read = false;//最後の二枚を読んでも良いかのフラグ
-    ma_sound = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[30])
+    ma_sound = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[30]);
     ma_sound.play().then(() => {
         ma_sound.pause();
         ma_sound.currentTime = 0;
@@ -250,22 +250,20 @@ function init_karuta(reader_num) {
     });
 
     for (let i = 0; i < sounds.length; i++) {
-        sounds[i] = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[i])
+        sounds[i] = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[i]);
         sounds[i].play().then(() => {
-            sounds[i].pause();
             canStart++;
-            sounds[i].currentTime = 0;
+            sounds[i].pause();
             console.log(i);
-
         }).catch(function () {
             console.log("fail!!")
         });
+
         if (i == 30) {
             continue;
         }
         sounds[i].addEventListener('loadedmetadata', function () {
             sounds_time[i] = Math.trunc(sounds[i].duration * 1000);
-
         });
     }
     mem_st = get_time();//記憶開始のタイミングの時間
