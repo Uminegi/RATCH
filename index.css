@@ -51,6 +51,10 @@ mem {
     display: none;
 }
 
+#Test_error {
+    display: none;
+}
+
 #now_st_btton,
 #st-button,
 #stop_bt,

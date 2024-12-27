@@ -43,6 +43,7 @@ let ma_sound;//初めのまがたま
 let canStart = 0;//全部のロードが終わったら始めることができるようにする
 //canStart == sounds.length + 1で始まる
 let canStartFirst = true;
+let errorOut;
 
 const v_name = [
     "r_n"
@@ -76,6 +77,7 @@ window.onload = function () {
     test_b = document.getElementById("test_bt");//テスト用ボタン
     maintenance = document.getElementById("testTime");//メンテナンス時のやつ
     loading = document.getElementById("loading")
+    errorOut = document.getElementById("Test_error");
     console.log(sounds);
 }
 
@@ -327,6 +329,7 @@ function loadPlayPause(num, reader_num) {
         console.log(num);
     }).catch(function () {
         console.log("fail!!")
+        errorOut.style.display = "block";
     });
     if (num == 30) {
         return;
