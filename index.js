@@ -123,6 +123,9 @@ function get_time() {
 //実際に動く部分
 function read() {
     if (canStart == sounds.length + 1 && canStartFirst) {
+        for (let i = 0; i < sounds.length; i++) {
+            sounds[i].currentTime = 0;
+        }
         loading.style.display = "none";
         memorize.style.display = "block";
         canStartFirst = false;
@@ -130,9 +133,6 @@ function read() {
     if (now_st && !(canStartFirst)) {
         if (first_shot) {//最初の1回だけ
             memorize.style.display = "none";
-            for (let i = 0; i < sounds.length; i++) {
-                sounds[i].currentTime = 0;
-            }
             if (maintenance_time) {
                 //test_b.style.display = "block";
             }
