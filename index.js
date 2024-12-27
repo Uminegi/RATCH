@@ -39,7 +39,7 @@ let maintenance_time = true;//メンテナンス中はtureにする
 let reader = 0;
 let sounds = Array.from({ length: 47 }, (_, i) => i);
 let sounds_time = Array.from({ length: 47 }, (_, i) => i);
-let ma_sound;
+let ma_sound;//初めのまがたま
 let canStart = 0;//全部のロードが終わったら始めることができるようにする
 //canStart == sounds.length + 1で始まる
 let canStartFirst = true;
@@ -130,6 +130,9 @@ function read() {
     if (now_st && !(canStartFirst)) {
         if (first_shot) {//最初の1回だけ
             memorize.style.display = "none";
+            for (let i = 0; i < sounds.length; i++) {
+                sounds[i].currentTime = 0;
+            }
             if (maintenance_time) {
                 //test_b.style.display = "block";
             }
@@ -244,7 +247,8 @@ function init_karuta(reader_num) {
     });
     ma_sound.addEventListener("loadedmetadata", function () {
         sounds_time[30] = Math.trunc(ma_sound.duration * 1000);
-    })
+    });
+
     for (let i = 0; i < sounds.length; i++) {
         sounds[i] = new Audio("./sound/" + v_name[reader_num] + "/" + file_names[i])
         sounds[i].play().then(() => {
