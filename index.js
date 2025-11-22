@@ -32,6 +32,8 @@ let now = new Date();//時間処理を使用するための宣言
 var last_read = false;
 var interval_id;//インターバルのID
 var explanation;
+var audioContext;//Web Audio API用
+var audioBuffers = {};//音声バッファを保存
 const v_name = ["r_n"];//読み上げる人
 const file_names = [//役札1,2,10,13,44,45　ま札:30　"つづけます":46
     "あ.mp3", "い.mp3", "う.mp3", "え.mp3", "お.mp3",
@@ -59,6 +61,14 @@ window.onload = function () {
     last_bt = document.getElementById("last_bt");//最後の2枚のときに表示されるボタン
     flag = document.getElementById("flag");//赤い旗の画像
     fin_bl = document.getElementById("finish");//終わった後に表示されるブロック
+
+    // Web Audio API初期化(iOS対応)
+    try {
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioContext();
+    } catch (e) {
+        console.log('Web Audio API not supported');
+    }
 
 }
 
@@ -103,18 +113,58 @@ function get_time() {
     now = new Date();
     return now.getTime();
 }
+
+// 音声バッファを読み込む関数(iOS対応)
+async function loadAudioBuffer(url) {
+    if (audioBuffers[url]) {
+        return audioBuffers[url];
+    }
+
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    audioBuffers[url] = audioBuffer;
+    return audioBuffer;
+}
+
+// 音声を再生する関数(iOS対応)
+function playAudio(url) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // AudioContextを再開(iOS対策)
+            if (audioContext.state === 'suspended') {
+                await audioContext.resume();
+            }
+
+            const audioBuffer = await loadAudioBuffer(url);
+            const source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioContext.destination);
+
+            source.onended = () => {
+                resolve(audioBuffer.duration * 1000); // ミリ秒で返す
+            };
+
+            source.start(0);
+            karuta_v = { duration: audioBuffer.duration }; // 互換性のため
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
 //実際に動く部分
 function read() {
     if (now_st) {
         if (first_shot) {//最初の1回だけ
             memorize.style.display = "none";
-            karuta_v = new Audio("./sound/" + v_name[0] + "/" + file_names[30]);//はじめはま札を読む
-            karuta_v.play();//流す処理
-            read_time = get_time();//一時的に現在の時間を入れる
+            const audioUrl = "./sound/" + v_name[0] + "/" + file_names[30];
+            read_time = get_time();//音声再生開始時刻を記録
             voice_time = 100000;//初期値として100秒を入れる
-            karuta_v.addEventListener('loadedmetadata', function () {
-                voice_time = Math.trunc(karuta_v.duration * 1000);
-                read_time = get_time();//読んだ瞬間の時間を取得
+            playAudio(audioUrl).then(duration => {
+                voice_time = Math.trunc(duration);
+            }).catch(err => {
+                console.error('音声再生エラー:', err);
             });
             read_num = 0;//初期値は0、テストのときは値を変えるので戻すのを忘れないように
             next = uniqueNumbers[read_num];
@@ -138,17 +188,16 @@ function read() {
                         fin();//終了時の処理
                         return;
                     }
-                    karuta_v = new Audio("./sound/" + v_name[0] + "/" + file_names[next]);
-                    karuta_v.play();//流す処理
-                    read_time = get_time();//一時的に現在の時間を入れる
+                    const audioUrl = "./sound/" + v_name[0] + "/" + file_names[next];
+                    read_time = get_time();//音声再生開始時刻を記録
                     voice_time = 100000;//初期値として100秒を入れる
-                    karuta_v.addEventListener('loadedmetadata', function () {
-                        voice_time = Math.trunc(karuta_v.duration * 1000);
-                        read_time = get_time();//読んだ瞬間の時間を取得
+                    playAudio(audioUrl).then(duration => {
+                        voice_time = Math.trunc(duration);
                         next = uniqueNumbers[read_num];
                         read_num = read_num + 1;
+                    }).catch(err => {
+                        console.error('音声再生エラー:', err);
                     });
-
 
                 }
 
@@ -158,13 +207,13 @@ function read() {
                     read_num = read_num - 1;
                     next_flag = false;
                 }
-                karuta_v = new Audio("./sound/" + v_name[0] + "/" + file_names[next]);
-                karuta_v.play();
-                read_time = get_time();
+                const audioUrl = "./sound/" + v_name[0] + "/" + file_names[next];
+                read_time = get_time();//音声再生開始時刻を記録
                 voice_time = 100000;//初期値として100秒を入れる
-                karuta_v.addEventListener('loadedmetadata', function () {//コールバック関数
-                    voice_time = Math.trunc(karuta_v.duration * 1000);
-                    read_time = get_time();//読んだ瞬間の時間を取得
+                playAudio(audioUrl).then(duration => {
+                    voice_time = Math.trunc(duration);
+                }).catch(err => {
+                    console.error('音声再生エラー:', err);
                 });
                 read_num = read_num + 1;
                 next = uniqueNumbers[read_num]
